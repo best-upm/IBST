@@ -1,0 +1,9 @@
+{% extends "main-template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+  <div class="container">
+    <h1> {{ title }}</h1>
+    {{ wtf.quick_form(form) }}
+  </div>
+  {% endblock %}

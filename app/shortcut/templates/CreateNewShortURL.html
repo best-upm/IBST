@@ -1,0 +1,28 @@
+{% extends "main-template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+{% block messages %}
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for msg in messages %}
+
+        <div class="alert">
+          <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+          <strong>{{msg}}</strong> 
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endblock %}
+<div class="container">
+  <h1>{{title}}</h1>
+  <form action="" method="post" class="form" role="form">
+    {{ form.csrf_token() }}
+    {{ wtf.form_field(form.link, class='form-control', placeholder='Introduce el link al que quieres redirigir') }}
+    {{ wtf.form_field(form.shortcutlink, class='form-control', placeholder='Introduce el link que debe redirigir') }}
+    {{ wtf.form_field(form.expiration_date, class='form-control') }}
+    <input type=submit class='btn btn-warning btn-block' value="Crear link">
+  </form>
+</div>
+{% endblock content%}

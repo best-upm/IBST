@@ -1,0 +1,36 @@
+{% extends "Login-Register-Page/Login-Register-Template.html" %}
+{% block title %} Registro de nuevos miembros {% endblock %}
+{% block content %}
+<div id=Registro>
+  <div class="imgcontainer">
+    <img src="/static/imagenes/RugeYA.png" alt="Avatar" class="avatar">
+  </div>
+  <form  style="display:flex; justify-content:center" action="/signIn" method= "POST">
+    <div class="container">
+      <h2>Registro de miembros LBG Madrid</h2>
+      {{ form.hidden_tag() }}
+      <label for="uname"><b>Nombre de Usuario</b></label>
+      {{ form.Usuario }}
+      <label for="psw"><b>Clave</b></label>
+      {{ form.Clave }}
+      <label for="psw"><b>Repite Clave</b></label>
+      {{ form.RClave }}
+      <label for="text"><b>Email</b></label>
+      {{ form.Email }}
+      <label for="text"><b>Nombre</b></label>
+      {{ form.Nombre }}
+      <label for="text"><b>Apellidos</b></label>
+      {{ form.Apellidos }}
+      <button type="submit">Registro</button>
+      <div style="display: flex; flex-direction: row; justify-content: space-between">
+      <a href ="/login">¿Ya tienes cuenta?</a>
+    </div>
+  </form>
+  <div id="message">
+</div>
+</div>
+</div>
+{% endblock %}
+{% block funciones %}
+
+{% endblock %}

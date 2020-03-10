@@ -1,0 +1,12 @@
+{% extends "main-template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} Pagina Principal {% endblock %}
+{% block content %}
+<div class="container">
+  <h2>Opciones de la nueva votacion</h2>
+  {% for x in options %}
+    <p>{{ x }}</p>
+  {% endfor %}
+
+
+  {% endblock %}

@@ -1,0 +1,28 @@
+{% extends "poll_template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} {{ title }} {% endblock %}
+{% block content_poll %}
+  <div class="container">
+    <h1> {{ title }}</h1>
+    <!--<form onSubmit="id_Poll();">-->
+      <h4>Introduce el codigo de votación</h4>
+      <div class='row'>
+        <div class='col'>
+          <input id="poll_id" type="text" maxlength="55" class="form-control" autofocus />
+        </div>
+        <div class='col-sm-'>
+          <!--<input type="submit" class="btn btn-warning" value="Ir a votación" />-->
+          <button onclick="id_Poll()">Ir a votación</button>
+        </div>
+      </div>
+    <!--</form>-->
+    <script>
+    function id_Poll(){
+      window.location.replace(window.location.href+"/"+document.getElementById('poll_id').value);
+
+  }
+  </script>
+
+
+  </div>
+  {% endblock %}

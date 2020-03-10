@@ -1,0 +1,33 @@
+{% extends "main-template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      <h2>Informacion extra sobre mi</h2>
+
+    </div>
+    <div class="col-sm-4">
+      {% block perfil %}
+      {% endblock %}
+    </div>
+  </div>
+</div>
+<script>
+  let Campus_select=document.getElementById('Campus');
+  let Escuela_select=document.getElementById('Escuela');
+
+  Campus_select.onchange = function() {
+    Campus = Campus_select.value;
+    fetch('/form/escuelas/'+Campus).then(function(response) {
+      response.json().then(function(data){
+        let optionHTML = '';
+        for (let escuela of data){
+          optionHTML += '<option value="' + escuela +'">' + escuela + '</option>';
+        }
+        Escuela_select.innerHTML = optionHTML;
+      });
+    });
+  }
+  </script>
+{% endblock %}

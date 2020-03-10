@@ -1,0 +1,75 @@
+
+
+    <div class="sidebar">
+      <div class="sidebar-wrapper">
+        <div class="logo">
+
+          <a class="navbar-brand" href="#">
+            <img src="/static/imagenes/BEST_BLANCO.png" height="70" class="d-inline-block align-top" alt="">
+          </a>
+        </div>
+
+        {% if current_user.is_authenticated %}
+        <ul class="nav">
+          <li class="active ">
+            <a href="/">
+              <i class="tim-icons icon-laptop"></i>
+              <p>Pagina principal</p>
+            </a>
+          </li>
+          <li>
+            <a href="/poll">
+              <i class="tim-icons icon-paper"></i>
+              <p>Votaciones</p>
+            </a>
+          </li>
+          {% if current_user.check_role('Admin') %}
+          <li>
+            <a href="/url/create">
+              <i class="tim-icons icon-pin"></i>
+              <p>URL Shortener</p>
+            </a>
+          </li>
+          <li>
+            <a href="/Admin">
+              <i class="tim-icons icon-bell-55"></i>
+              <p>Administration</p>
+            </a>
+          </li>
+          <li>
+            <a href="/page-user">
+              <i class="tim-icons icon-single-02"></i>
+              <p>User Profile</p>
+            </a>
+          </li>
+          <li>
+            <a href="/ui-tables">
+              <i class="tim-icons icon-puzzle-10"></i>
+              <p>Table List</p>
+            </a>
+          </li>
+          <li>
+            <a href="/ui-typography">
+              <i class="tim-icons icon-align-center"></i>
+              <p>Typography</p>
+            </a>
+          </li>
+          <li>
+            <a href="/page-rtl-support">
+              <i class="tim-icons icon-world"></i>
+              <p>RTL Support</p>
+            </a>
+          </li>
+          <li>
+            <a href={{ url_for('logout') }} >
+              <i class="tim-icons icon-user-run"></i>
+              <p>Logout</p>
+            </a>
+          </li>
+
+        </ul>
+        {% endif %}
+        {% endif %}
+
+      </div>
+    </div>

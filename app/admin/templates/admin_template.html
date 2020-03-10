@@ -1,0 +1,16 @@
+{% extends "main-template.html" %}
+{% block title %} {{title}} {% endblock %}
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="btn-group">
+      <a href="{{ url_for('admin_blueprint.members') }}" class="btn btn-default">Miembros</a>
+      <a href="/test1" class="btn btn-default">Roles</a>
+      <a href="/test2" class="btn btn-default">Votar</a>
+    </div>
+  </div>
+  <li class="dropdown-divider"></li>
+</div>
+{% block content_admin %}
+{% endblock content_admin %}
+{% endblock content%}

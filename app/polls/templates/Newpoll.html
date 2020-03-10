@@ -1,0 +1,26 @@
+{% extends "poll_template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} {{ title }} {% endblock %}
+{% block content_poll %}
+  <div class="container">
+    <h1> {{ title }}</h1>
+    <form action="" method="post" class="form" role="form">
+      {{ form.csrf_token() }}
+      {{ wtf.form_field(form.name, class='form-control', placeholder='Titulo') }}
+      {{ wtf.form_field(form.description, class='form-control', placeholder='Descripción de la votación') }}
+      <div class='row'>
+        <div class='col'>
+          {{ wtf.form_field(form.start_date, class='form-control') }}
+        </div>
+        <div class='col'>
+          {{ wtf.form_field(form.end_date, class='form-control') }}
+        </div>
+      </div>
+      {{ wtf.form_field(form.Opciones, class='form-control', placeholder='Opciones de la votación (Separada con ; Espacio)') }}
+
+
+      <input type=submit class='btn btn-warning btn-block' value="Enviar Votacion">
+    </form>
+
+  </div>
+  {% endblock %}

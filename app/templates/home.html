@@ -1,0 +1,9 @@
+{% extends "main-template.html" %}
+{% block title %} Pagina Principal {% endblock %}
+{% block content %}
+  {% if current_user.check_password('noviembre') %}
+  TEST
+  {% else %}
+  No entraste
+  {% endif %}
+{% endblock %}

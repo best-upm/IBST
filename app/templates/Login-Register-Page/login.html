@@ -1,0 +1,24 @@
+{% extends "Login-Register-Page/Login-Register-Template.html" %}
+{% block title %} Login {% endblock %}
+{% block content %}
+<div id=Login>
+  <div class="imgcontainer">
+    <img src="/static/imagenes/RugeYA.png" alt="Avatar" class="avatar">
+  </div>
+  <form  style="display:flex; justify-content:center" action="/login" method= "POST">
+    <div class="container">
+      {{ form.hidden_tag() }}
+      <label for="uname"><b>Username</b></label>
+      {{ form.Usuario }}
+      <label for="psw"><b>Password</b></label>
+      {{ form.Clave }}
+      <button type="submit">Login</button>
+      <div style="display: flex; flex-direction: row; justify-content: space-between">
+        <label>
+          {{ form.remember }} Remember me
+        </label>
+      <a href ="/signIn">¿Aun no te has registrado?</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,8 @@
+{
+  "Campus": [
+    {"Nombre":"Ciudad Universitaria", "ETS":["Arquitectura", "Edificacion", "Aeronáutica", "Agronómica", "Montes, Forestal y Medio Natural", "Caminos, Canales y Puertos", "Telecomunicación", "Navales"]},
+    {"Nombre":"Madrid Ciudad", "ETS":["Ingenieria Civil", "Diseño Industrial", "Minas y Energía", "Industriales"]},
+    {"Nombre":"Montegancedo", "ETS":["Informaticos", "BioTEC"]},
+    {"Nombre":"Campus Sur", "ETS":["Sistemas Informaticos", "Sistemas de Telecomunicación", "Topografia, Geodesia y Cartografia", "Moda..."]}
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "Escuelas": [
+    {"Campus":"Ciudad Universitaria", "ETS":"Arquitectura"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Edificacion"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Aeronáutica"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Agronómica"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Montes, Forestal y Medio Natural"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Caminos, Canales y Puertos"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Telecomunicación"},
+    {"Campus":"Ciudad Universitaria", "ETS":"Navales"},
+    {"Campus":"Madrid Ciudad", "ETS":"Ingenieria Civil"},
+    {"Campus":"Madrid Ciudad", "ETS":"Diseño Industrial"},
+    {"Campus":"Madrid Ciudad", "ETS":"Minas y Energía"},
+    {"Campus":"Madrid Ciudad", "ETS":"Industriales"},
+    {"Campus":"Montegancedo", "ETS":"Informaticos"},
+    {"Campus":"Montegancedo", "ETS":"BioTEC"},
+    {"Campus":"Campus Sur", "ETS":"Sistemas Informaticos"},
+    {"Campus":"Campus Sur", "ETS":"Sistemas de Telecomunicación"},
+    {"Campus":"Campus Sur", "ETS":"Topografia, Geodesia y Cartografia"},
+    {"Campus":"Campus Sur", "ETS":"Moda..."}
+  ]
+}

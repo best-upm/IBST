@@ -1,0 +1,57 @@
+{% extends "profile.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} Editar perfil {% endblock %}
+{% block perfil %}
+{{ avatars.jcrop_css() }}
+<div class="d-flex justify-content-center">
+  <img src="{{ avatars.social_media('DeGdanietz', platform='twitter', size='large') }}" alt="Lukas">
+</div>
+<div class="rm-5 p-2">
+  <form action="" method="post" class="form" role="form">
+    {{ form.csrf_token() }}
+    <d1>
+      <button id="Avatar" type=button class="btn btn-secondary btn-block" data-toggle="modal" data-target="#myModal">Cambiar avatar</button>
+      {{ wtf.form_field(form.Nombre, class='form-control', placeholder='Nombre') }}
+      {{ wtf.form_field(form.Apellidos, class='form-control', placeholder='Apellidos') }}
+      {{ wtf.form_field(form.Campus, class='form-control') }}
+      {{ wtf.form_field(form.Escuela) }}
+    </d1>
+    <input type=submit class='btn btn-warning btn-block' value="Enviar cambios">
+  </form>
+</div>
+<div class="modal fade" id="myModal" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="text-success">Cambiar Avatar</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        {{ wtf.form_field(form.avatar, class='form-control', placeholder='Avatar') }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  let Campus_select=document.getElementById('Campus');
+  let Escuela_select=document.getElementById('Escuela');
+
+
+  Campus_select.onchange = function() {
+    Campus = Campus_select.value;
+    fetch('/form/escuelas/'+Campus).then(function(response) {
+      response.json().then(function(data){
+        let optionHTML = '';
+        for (let escuela of data){
+          optionHTML += '<option value="' + escuela +'">' + escuela + '</option>';
+        }
+        Escuela_select.innerHTML = optionHTML;
+      });
+    });
+  }
+  </script>
+{% endblock %}
