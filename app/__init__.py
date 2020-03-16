@@ -7,9 +7,11 @@ from flask_avatars import Avatars
 from config import Config
 from flask_login import LoginManager
 from redis import Redis
+from flask_marshmallow import Marshmallow
 import rq
 
 app = Flask(__name__)
+ma = Marshmallow(app)
 avatars = Avatars(app)
 app.config.from_object(Config)
 db = SQLAlchemy(app)

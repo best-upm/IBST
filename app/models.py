@@ -1,5 +1,6 @@
 from datetime import datetime, date, timedelta
 import base64, os
+import json
 #from imgur-uploader import imgur-uploader
 from app import db, login
 from flask_login import UserMixin
@@ -54,6 +55,7 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     Escuela = db.Column(db.String(50))
     Imagen = db.Column(db.String(50))
     Twitter = db.Column(db.String(50))
+    Membresia = db.relationship('Membresia', secondary=Rol, backref=db.backref('Miembros', lazy='dynamic'))
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration=db.Column(db.DateTime)
     def get_token(self, expires_in=3600):
@@ -89,6 +91,11 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
         return '<User {}>'.format(self.Usuario)
 
     def to_dict(self, include_email=False):
+        print(self.Membresia, flush=True)
+        member=[]
+        for x in self.Membresia:
+            print(x, flush=True)
+            member.append(x.serialize())
         data={
         'id':self.id,
         'Usuario':self.Usuario,
@@ -96,7 +103,8 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
         'Apellidos': self.Apellidos,
         'Telefono': self.Telefono,
         'Campus': self.Campus,
-        'Escuela': self.Escuela
+        'Escuela': self.Escuela,
+        'Membresia': member,
         }
         if include_email:
             data['email']= self.email
@@ -109,11 +117,21 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
                 self.set_password(data['password'])
 
 
+
 class Membresia(db.Model):
     #__tablename__='Roles'
     id = db.Column(db.Integer(), primary_key=True)
     tipo = db.Column(db.String(30), unique=True)
     Usuarios = db.relationship('User', secondary=Rol, backref=db.backref('Miembros', lazy= 'dynamic'))
+    def __repr__(self):
+        return '{}'.format(self.tipo)
+    #def toJSON(self):
+        #return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+    def serialize(self):
+        return {
+            'id':self.id,    #
+            'tipo':self.tipo   #
+        }
 
 class Post(db.Model):
     id_post=db.Column(db.Integer(), primary_key=True)

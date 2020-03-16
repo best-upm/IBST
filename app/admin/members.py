@@ -7,4 +7,5 @@ from app.admin import bp
 @bp.route('members', methods=['GET'])
 @login_required
 def members():
-    return render_template('admin_template.html')
+    title='Miembros'
+    return render_template('members-archive.html', title=title)
