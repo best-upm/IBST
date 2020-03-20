@@ -90,12 +90,10 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     def __repr__(self):
         return '<User {}>'.format(self.Usuario)
 
-    def to_dict(self, include_email=False):
-        print(self.Membresia, flush=True)
+    def to_dict(self, include_email=False, include_avaliable_roles=False):
         member=[]
         for x in self.Membresia:
-            print(x, flush=True)
-            member.append(x.serialize())
+            member.append(x.to_dict())
         data={
         'id':self.id,
         'Usuario':self.Usuario,
@@ -104,10 +102,18 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
         'Telefono': self.Telefono,
         'Campus': self.Campus,
         'Escuela': self.Escuela,
-        'Membresia': member,
+        #'Membresia': member,
         }
         if include_email:
             data['email']= self.email
+        if include_avaliable_roles:
+            roles=[]
+            membresias=Membresia.query.all()
+            for x in membresias:
+                roles.append(x.serialize(self.check_role(x.tipo)))
+            data['Membresia']= roles
+        else:
+            data['Membresia']=member
         return data
     def from_dict(self, data, new_user=False):
         for field in ['Usuario', 'email', 'Nombre', 'Apellidos', 'Telefono']:
@@ -127,11 +133,18 @@ class Membresia(db.Model):
         return '{}'.format(self.tipo)
     #def toJSON(self):
         #return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
-    def serialize(self):
+    def serialize(self, state):
         return {
             'id':self.id,    #
-            'tipo':self.tipo   #
+            'tipo':self.tipo,   #
+            'state': state
         }
+    def to_dict(self):
+        data={
+        'id': self.id,
+        'tipo': self.tipo
+        }
+        return data
 
 class Post(db.Model):
     id_post=db.Column(db.Integer(), primary_key=True)

@@ -48,7 +48,7 @@ def get_usersMa():
     return user_schema.dump(user)
 
 @bp.route('users/<int:id>', methods=['GET'])
-@token_auth.login_required
+#@token_auth.login_required
 def get_user(id):
     #Returns info about a user
     return jsonify(User.query.get_or_404(id).to_dict())
@@ -60,7 +60,7 @@ def get_users():
     data = User.to_collection_dict(User.query, page, per_page, 'api_blueprint.get_users')
     return jsonify(data)
     #Returns a List of all users
-    pass
+
 @bp.route('/users', methods=['POST'])
 def create_user():
     #Creates a new user
@@ -95,4 +95,3 @@ def update_user(id):
     user.from_dict(data, new_user=False)
     db.session.commit()
     return jsonify(user.to_dict())
-    pass

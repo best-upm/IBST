@@ -6,9 +6,9 @@ from flask_bootstrap import Bootstrap
 from flask_avatars import Avatars
 from config import Config
 from flask_login import LoginManager
-from redis import Redis
+#from redis import Redis
 from flask_marshmallow import Marshmallow
-import rq
+#import rq
 
 app = Flask(__name__)
 ma = Marshmallow(app)
@@ -19,8 +19,8 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view='login'
 bootstrap = Bootstrap(app)
-app.redis = Redis.from_url(app.config['REDIS_URL'])
-app.task_queue = rq.Queue('BOSS-tasks', connection=app.redis)
+#app.redis = Redis.from_url(app.config['REDIS_URL'])
+#app.task_queue = rq.Queue('BOSS-tasks', connection=app.redis)
 from app.errors import bp as errors_bp
 app.register_blueprint(errors_bp)
 from app.polls import bp as polls_bp

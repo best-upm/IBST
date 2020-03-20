@@ -1,4 +1,4 @@
-import time
+"""import time
 from redis import Redis
 import rq
 from rq import Queue
@@ -19,3 +19,4 @@ def example(seconds):
         print(i)
         time.sleep(1)
     print('Task completed')
+"""

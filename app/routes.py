@@ -4,7 +4,7 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app.models import *
 from app.forms import  EditProfile, NewPostForm, NewPollForm, LoginForm, RegisterForm
 from app.functions import roles_required, role_necessary
-from app.shedule import *
+#from app.shedule import *	#Redis
 import os, json
 
 @app.route("/")
