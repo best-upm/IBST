@@ -19,14 +19,25 @@ def get_roles():
 def get_roles_Settings_of_User(id):
     user=User.query.get_or_404(id)
     data=user.to_dict(include_avaliable_roles=True)
+    data['self']='/api/users_roles/'+str(id)
     return jsonify(data)
 
 @bp.route('/users_roles/<int:id>', methods=['PUT'])
 def set_role_to_User(id):
-    id=1
-    #user=User.query.get_or_404(id).first()
+    user=User.query.get(id)
     data = request.get_json() or {}
-    print(data, flush=True)
+    x=data['Membresia']
+    for i in x:
+        print(i['state'], flush= True)
+        if (i['state'] and not (user.check_role(i['tipo']))):
+            membresia=Membresia.query.get(i['id'])
+            user.Membresia.append(membresia)
+        elif((user.check_role(i['tipo']) and not i['state'])):
+            membresia=Membresia.query.get(i['id'])
+            user.Membresia.remove(membresia)
+    #print(x, flush=True);
+    db.session.commit()
+    #print(membresias, flush=True);
     return jsonify("done")
 
 @bp.route('/users_roles/<int:id>', methods=['DELETE'])

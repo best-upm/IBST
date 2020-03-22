@@ -176,7 +176,7 @@ input:checked + .slider:before {
               </div>
             </div>
             <div class="col">
-            </div>
+            </https://www.amazon.es/s?k=latitude+5401&__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2div>
           </div>
         </div>
       </div>
@@ -197,10 +197,10 @@ input:checked + .slider:before {
   </div>
 
   <div id="role-modal" class="modal">
-    <div id="role-content-modal" class="modal-content">
+    <div id="role-content-modal" class="modal-content modal-lg">
       <div class="modal-header">
         <h2 class="modal-title">Modificar Roles</h2>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" id="role-modal-close" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -208,8 +208,8 @@ input:checked + .slider:before {
         <!--Metemos aqui todo el contenido del modal-->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary">Guardar Cambios</button>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="role-save">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary" id="role-dismiss"=>Cancelar</button>
       </div>
 
 
@@ -231,24 +231,27 @@ input:checked + .slider:before {
       //  modal.style.display = "none";
       //}
   }
-
-
-
   var url_server = 'http://localhost:5000'
   var endpoint = '/api/users?'
   //var users_pages = '/api/users?page='
-  var items_per_page= 10
+  var page =1;
+  var items_per_page= 10;
   var table = document.getElementById("tabla");
   var button_slot=document.getElementById("page-button");
   var request = new XMLHttpRequest();
+  var object;
+
   //setData('/api/users_roles/1')
   getData('/api/users', fillUsersTable, table);
   //fillUsersTable(table, data);
   function fillUsersTable(table, data){
     for( usuario in data.items){
       var val_1 = document.createElement("TD")
+      var a = document.createElement("a");
       var content = document.createTextNode(data.items[usuario].Usuario)
-      val_1.appendChild(content)
+      a.appendChild(content);
+      a.href='/user/'+data.items[usuario].Usuario;
+      val_1.appendChild(a)
       var val_2 = document.createElement("TD")
       var content = document.createTextNode(data.items[usuario].Nombre)
       val_2.appendChild(content)
@@ -277,9 +280,9 @@ input:checked + .slider:before {
       fila.appendChild(val_4)
       fila.appendChild(settings)
       table.appendChild(fila)
-
     }
   }
+
   function cogwheel_options(e){
     var modal = document.getElementById("options-modal");
     var cogwheel = e.target;
@@ -294,27 +297,39 @@ input:checked + .slider:before {
     var change_role=document.getElementById("change-role");
     change_role.setAttribute("link", url);
     change_role.addEventListener("click", change_Role, false);
-
-
-    //setData(url)
   }
+
   function change_Role(e){
     var button=e.target;
     var url = button.getAttribute("link");
     var modal=document.getElementById("role-modal");
     var modal_content=document.getElementById("role-content-modal")
-    modal_content.style.width='60%';
-    //modal_content.style.position= "fixed";
-    //alert(url);
     modal_inside=document.getElementById("modal_inside");
     getData(url, fillModal, modal_inside)
     modal_content.style.left="50%";
     modal_content.style.top="250px";
     modal_content.style.transform="translate(-50%, -50%)";
-
+    var saveRoles=document.getElementById("role-save");
+    saveRoles.onclick = function(){
+      var fila=document.getElementById("role-settings");
+      for (x in object.Membresia){
+        var element=document.getElementById("role_id_"+x)
+        object.Membresia[x].state=(element.checked);
+      }
+      var url=object.self;
+      setData(url, object);
+      modal.style.display="None";
+    }
+    document.getElementById("role-dismiss").onclick=function(){
+      modal.style.display="None";
+    }
+    document.getElementById("role-modal-close").onclick=function(){
+      modal.style.display="None";
+    }
     modal.style.display = "block";
     modal.addEventListener("click", closeModal, false);
   }
+
   function fillModal(modal, data){
     while(modal_inside.hasChildNodes()){
       modal_inside.removeChild(modal_inside.firstChild)
@@ -323,11 +338,12 @@ input:checked + .slider:before {
     var paragraph1 = document.createTextNode("Usuario: "+data.Usuario);
     var br = document.createElement("br");
     var paragraph2 = document.createTextNode("Nombre y Apellidos: "+data.Nombre+" "+ data.Apellidos);
-
+    object=data;
     tabla=document.createElement("TABLE");
     tabla.setAttribute("class", "table tablesorter");
     var fila = tabla.insertRow(0);
     var fila1 = tabla.insertRow(1);
+    fila1.setAttribute("id", "role-settings")
     fila.setAttribute("class", "text-primary");
     for (x in data.Membresia){
       var celda=fila.insertCell(x);
@@ -337,6 +353,10 @@ input:checked + .slider:before {
       switch1.setAttribute("class", "switch");
       var input= document.createElement("INPUT");
       input.setAttribute("type", "checkbox");
+      input.setAttribute("id", "role_id_"+x);
+      if(data.Membresia[x].state){
+        input.checked= true;
+      }
       switch1.appendChild(input);
       var span=document.createElement("SPAN");
       span.setAttribute("class", "slider round");
@@ -352,7 +372,8 @@ input:checked + .slider:before {
     modal_inside.appendChild(tabla);
     modal.appendChild(modal_inside);
   }
-  function buttonClick(e){
+
+  function loadNewPage(e){
     if (e.target.tagName.toLowerCase() == "button") {
       while(table.hasChildNodes()){
         table.removeChild(table.firstChild)
@@ -361,12 +382,12 @@ input:checked + .slider:before {
         button_slot.removeChild(button_slot.firstChild)
       }
     	var btn = e.target;
+      page=btn.getAttribute("page")
       getData(btn.getAttribute("href"), fillUsersTable, table);
     }
   }
+
   function getData(url, function_to_do, element){    //_sufix=null, page=1, items=10
-    //var url=url_server+url_sufix;
-    //alert("hola");
     request.open('GET', url, true);
     request.onload = function(){
       if(request.status>=200&&request.status < 400){
@@ -379,23 +400,21 @@ input:checked + .slider:before {
             button.setAttribute("class", "btn btn-secondary");
             var url=endpoint+'page='+(x+1)+'&per_page='+items_per_page;
             button.setAttribute("href", url);
-            //arr.push(url);
-            //button.id=arr[x];
+            button.setAttribute("page", (x+1));
             var val=document.createTextNode(x+1);
             button.appendChild(val);
             button_slot.appendChild(button);
             button_slot.innerHTML += " ";
           }
-          button_slot.addEventListener("click", buttonClick);
+          button_slot.addEventListener("click", loadNewPage);
         }
-        //return data;
+        return data;
       }
     }
     request.send();
   }
-  function setData(url){
-    console.log("Setting test data")
-    console.log(url)
+
+  function setData(url, data){
     request.open('PUT', url, true);
     request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
     request.onload = function(){
@@ -407,10 +426,8 @@ input:checked + .slider:before {
         console.error(data);
       }
     }
-    var data={};
-    data.id=1;
-    data.role="Admin";
     var json = JSON.stringify(data);
+    console.log(json)
     request.send(json)
   }
   </script>
