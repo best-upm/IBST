@@ -1,0 +1,159 @@
+<!--This page serves as the voting app-->
+{% extends "poll_template.html" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block title %} {{ poll.name }} {% endblock %}
+{% block stylesheets %}
+<style>
+.droptarget {
+  float: left;
+  width: 100px;
+  height: 35px;
+  margin: 15px;
+  padding: 10px;
+  border: 1px solid #aaaaaa;
+}
+.orderbox {
+  width: 275px;
+  height: 125px;
+  border-radius: 5px;
+  background-color: #404060;
+  border-top: 5px solid #ca2c92;/*#3ACFD5;*/
+  border-bottom: 5px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 5px 100%;
+  background-image: -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
+}
+.optionbox {
+  position: absolute;
+  text-align: center;
+  cursor: move;
+  width: 250px;
+  height: 100px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #404060;
+  border-top: 5px solid #ca2c92;/*#3ACFD5;*/
+  border-bottom: 5px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 5px 100%;
+  background-image: -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
+}
+
+</style>
+{% endblock %}
+{% block content_poll %}
+<div class="container">
+  <br>
+  <h2>{{ poll.name }}</h2>
+  <h4>{{ poll.description }}</h4>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-8">
+        <h4>Organizador</h4>
+        <div class="orderbox" id = "orderbox"></div>
+
+      </div>
+      <div class="col-sm-4">
+        <h5>OPCIONES</h5>
+        <div class="optionbox" id="drag_option_1">
+          <h3>Opcion 1</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block javascripts%}
+<script>
+//Make the DIV element draggagle:
+var old_x;
+var old_y;
+dragElement(document.getElementById("drag_option_1"));
+var dropbox = document.getElementById("orderbox");
+dropbox.offsetRight=dropbox.offsetLeft+dropbox.offsetWidth;
+
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  if (document.getElementById(elmnt.id + "header")) {
+    /* if present, the header is where you move the DIV from:*/
+    document.getElementById(elmnt.id + "header").onmousedown = dragMouseDown;
+  } else {
+    /* otherwise, move the DIV from anywhere inside the DIV:*/
+    body = document.body;
+    elmnt.onmousedown = dragMouseDown;
+    //elmnt.addEventListener("onmousedown", dragMouseDown, false);
+    elmnt.addEventListener("touchstart", handleTouchStart, false);
+    //body.addEventListener("touchmove", handleTouchMove, false);
+    elmnt.addEventListener("touchmove", handleTouchMove, false);
+    elmnt.addEventListener("touchend", handleTouchEnd, false);
+  }
+}
+  function handleTouchStart(e){
+    let touchLocation = e.targetTouches[0];
+    old_x= touchLocation.pageX;
+    old_y= touchLocation.pageY;
+    e.preventDefault();
+  }
+  function handleTouchMove(e){
+    let touchLocation = e.targetTouches[0];
+    e.preventDefault();
+    let position_X = touchLocation.pageX-old_x;
+    let position_Y = touchLocation.pageY-old_y;
+    e.target.style.left = position_X+"px";
+    e.target.style.top = position_Y+"px";
+  }
+  function handleTouchEnd(e){
+    e.preventDefault();
+    console.log(dropbox);
+  }
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    /* stop moving when mouse button is released:*/
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+
+</script>
+{% endblock %}

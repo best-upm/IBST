@@ -2,15 +2,41 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block title %} Editar perfil {% endblock %}
 {% block perfil %}
-{{ avatars.jcrop_css() }}
 <div class="d-flex justify-content-center">
-  <img src="{{ avatars.social_media('DeGdanietz', platform='twitter', size='large') }}" alt="Lukas">
+  {% if(current_user.Imagenes.last_changed=="Twitter"): %}
+   <img src="{{ avatars.social_media(current_user.Imagenes.Twitter_user_picture, platform='twitter', size='large') }}" alt="{{ current_user.Nombre }}">
+   {% elif current_user.Imagenes.last_changed == "Upload": %}
+   <img src="{{ url_for('get_avatar', filename=current_user.Imagenes.large_picture) }}" alt="{{ current_user.Nombre }}">
+   {% elif current_user.Imagenes.last_changed == "URL": %}
+   <img src="{{ current_user.Imagenes.picture_url }}" alt="{{ current_user.Nombre }}">
+   {% else: %}
+   <img src="{{ avatars.default(size='l') }}" alt="{{ current_user.Nombre }}">
+   {% endif %}
+
 </div>
 <div class="rm-5 p-2">
-  <form action="" method="post" class="form" role="form">
+  <button id="Avatar" type=button class="btn btn-secondary btn-block" data-toggle="modal" data-target="#myModal">Cambiar avatar</button>
+  <form action="" method="post" class="form" role="form" enctype="multipart/form-data">
     {{ form.csrf_token() }}
     <d1>
-      <button id="Avatar" type=button class="btn btn-secondary btn-block" data-toggle="modal" data-target="#myModal">Cambiar avatar</button>
+      <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="text-success">Cambiar Avatar</h4>
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+              {{ wtf.form_field(form.avatar, class='form-control', placeholder='Avatar') }}
+            </div>
+            <div class="modal-footer">
+              <input type=submit class='btn btn-warning btn-default' value="Enviar cambios">
+              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
       {{ wtf.form_field(form.Nombre, class='form-control', placeholder='Nombre') }}
       {{ wtf.form_field(form.Apellidos, class='form-control', placeholder='Apellidos') }}
       {{ wtf.form_field(form.Campus, class='form-control') }}
@@ -19,39 +45,26 @@
     <input type=submit class='btn btn-warning btn-block' value="Enviar cambios">
   </form>
 </div>
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="text-success">Cambiar Avatar</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        {{ wtf.form_field(form.avatar, class='form-control', placeholder='Avatar') }}
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+
+
+{% endblock %}
+{% block javascripts %}
 <script>
-  let Campus_select=document.getElementById('Campus');
-  let Escuela_select=document.getElementById('Escuela');
-
-
-  Campus_select.onchange = function() {
-    Campus = Campus_select.value;
-    fetch('/form/escuelas/'+Campus).then(function(response) {
-      response.json().then(function(data){
-        let optionHTML = '';
-        for (let escuela of data){
-          optionHTML += '<option value="' + escuela +'">' + escuela + '</option>';
-        }
-        Escuela_select.innerHTML = optionHTML;
-      });
+let Campus_select=document.getElementById('Campus');
+let Escuela_select=document.getElementById('Escuela');
+var
+Campus_select.onchange = function() {
+  Campus = Campus_select.value;
+  fetch('/form/escuelas/'+Campus).then(function(response) {
+    response.json().then(function(data){
+      let optionHTML = '';
+      for (let escuela of data){
+        optionHTML += '<option value="' + escuela +'">' + escuela + '</option>';
+      }
+      Escuela_select.innerHTML = optionHTML;
     });
-  }
+  });
+}
+var
   </script>
 {% endblock %}

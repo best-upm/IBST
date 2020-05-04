@@ -9,6 +9,8 @@ from flask_login import LoginManager
 #from redis import Redis
 from flask_marshmallow import Marshmallow
 #import rq
+from oauthlib.oauth2 import WebApplicationClient
+import requests
 
 app = Flask(__name__)
 ma = Marshmallow(app)
@@ -19,6 +21,9 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view='login'
 bootstrap = Bootstrap(app)
+# OAuth 2 client setup
+client = WebApplicationClient(app.config['GOOGLE_CLIENT_ID'])
+
 #app.redis = Redis.from_url(app.config['REDIS_URL'])
 #app.task_queue = rq.Queue('BOSS-tasks', connection=app.redis)
 from app.errors import bp as errors_bp

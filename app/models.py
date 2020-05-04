@@ -33,7 +33,8 @@ class PaginatedAPIMixin(object):
 
 @login.user_loader
 def load_user(id):
-    return User.query.get(int(id))
+    #return User.query.get(int(id))
+    return User.query.get(id)
 
 Rol = db.Table('Roles', db.Column('id', db.Integer, db.ForeignKey('user.id')), db.Column('id_Membresia', db.Integer, db.ForeignKey('membresia.id')))
 #Topic = db.Table('Topic' db.Column('id_post', db.Integer, db.ForeignKey('post.id_post')), db.Column('id_branch', db.Integer, db.ForeignKey('branch.id_branch')))
@@ -45,6 +46,7 @@ option_vote = db.Table('option_vote', db.Column('id_option', db.Integer, db.Fore
 class User(db.Model, PaginatedAPIMixin, UserMixin):
     #__tablename__='Usuarios'
     id = db.Column(db.Integer, primary_key=True)
+    idType = db.Column(db.String(4)) #Esto esta por la implementacion de Google Auth. Hay un tipo de cuentas que no tiene clave
     Usuario = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -53,8 +55,9 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     Telefono = db.Column(db.String(15))
     Campus = db.Column(db.String(30))
     Escuela = db.Column(db.String(50))
-    Imagen = db.Column(db.String(50))
-    Twitter = db.Column(db.String(50))
+    #Imagen = db.Column(db.String(50))
+    #Twitter = db.Column(db.String(50))
+    Imagenes = db.relationship('pictures', backref='user', uselist=False)
     Membresia = db.relationship('Membresia', secondary=Rol, backref=db.backref('Miembros', lazy='dynamic'))
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration=db.Column(db.DateTime)
@@ -77,6 +80,8 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     def check_password(self, password):
+        if self.idType == "OAUTH":
+            return True
         return check_password_hash(self.password_hash, password)
     def check_role(self, role):
         id_membresia =Membresia.query.filter_by(tipo=role).first()
@@ -107,8 +112,8 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
         if include_email:
             data['email']= self.email
         if include_avaliable_roles:
-            roles=[]
             membresias=Membresia.query.all()
+            roles=[]
             for x in membresias:
                 roles.append(x.serialize(self.check_role(x.tipo)))
             data['Membresia']= roles
@@ -122,6 +127,17 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
             if new_user and 'password' in data:
                 self.set_password(data['password'])
 
+
+class pictures(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'), nullable=False)
+    original_picture = db.Column(db.String(50))
+    large_picture = db.Column(db.String(50))
+    medium_picture = db.Column(db.String(50))
+    small_picture = db.Column(db.String(50))
+    Twitter_user_picture = db.Column(db.String(50))
+    picture_url = db.Column(db.String(300))
+    last_changed = db.Column(db.String(20))
 
 
 class Membresia(db.Model):

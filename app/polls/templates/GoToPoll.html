@@ -3,6 +3,14 @@
 {% block title %} {{ title }} {% endblock %}
 {% block content_poll %}
   <div class="container">
+    <style>
+    #div1 {
+      width: 350px;
+      height: 350px;
+      padding: 10px;
+      border: 1px solid #aaaaaa;
+    }
+</style>
     <h1> {{ title }}</h1>
     <!--<form onSubmit="id_Poll();">-->
       <h4>Introduce el codigo de votación</h4>
@@ -16,13 +24,34 @@
         </div>
       </div>
     <!--</form>-->
-    <script>
-    function id_Poll(){
-      window.location.replace(window.location.href+"/"+document.getElementById('poll_id').value);
+    <br>
+    <br>
+    <div id="div1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <br>
+    <img id="drag1" src="https://upload.wikimedia.org/wikipedia/commons/5/50/BESTlogo.png" draggable="true" ondragstart="drag(event)" >
 
-  }
-  </script>
 
 
   </div>
+  {% endblock %}
+
+  {% block javascripts%}
+  <script>
+  function allowDrop(ev) {
+    ev.preventDefault();
+  }
+
+  function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+  }
+
+  function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+  }
+  function id_Poll(){
+    window.location.replace(window.location.href+"/"+document.getElementById('poll_id').value);
+  }
+  </script>
   {% endblock %}

@@ -5,7 +5,15 @@
 </div>
 <div class="card rm-5 p-3 indigo" style="height: 100%">
   <div class="d-flex justify-content-center">
-    <img src="{{ avatars.social_media('DeGdanietz', platform='twitter', size='large') }}" alt="Lukas">
+    {% if(user.Imagenes.last_changed=="Twitter"): %}
+     <img src="{{ avatars.social_media(user.Imagenes.Twitter_user_picture, platform='twitter', size='large') }}" alt="{{ user.Nombre }}">
+     {% elif user.Imagenes.last_changed == "Upload": %}
+     <img src="{{ url_for('get_avatar', filename=user.Imagenes.large_picture) }}" alt="{{ user.Nombre }}">
+     {% elif user.Imagenes.last_changed == "URL": %}
+     <img src="{{ user.Imagenes.picture_url }}" alt="{{ user.Nombre }}">
+     {% else: %}
+     <img src="{{ avatars.default(size='l') }}" alt="{{ user.Nombre }}">
+     {% endif %}
   </div>
   <div class="rm-5 p-2">
     <p><font size="6" color="yellow"><b>>Usuario:  </b></font>

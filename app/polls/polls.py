@@ -23,12 +23,12 @@ def newPoll():
         form.populate_obj(poll)
         options = list(form.Opciones.data.split("; "))
         permutaciones = list(permutations(options))
-        """for option in options:
+        for option in options:
             opcion = PollOption(option_name=option)
-            poll.options.append(opcion)"""
-        for permutacion in permutaciones:
-            opcion = PollOption(option_name=permutacion)
             poll.options.append(opcion)
+        """for permutacion in permutaciones:
+            opcion = PollOption(option_name=permutacion)
+            poll.options.append(opcion)"""
         db.session.add(poll)
         db.session.commit()
 		#print(options, flush=True)
@@ -36,6 +36,7 @@ def newPoll():
     return render_template('Newpoll.html', title=title, form=form)
 @bp.route('/')
 @bp.route('polls')
+@login_required
 @role_necessary(rol=['Admin', 'Full', 'Baby'])
 def Polls():
     title = 'Tabla de Votaciones'
@@ -44,11 +45,14 @@ def Polls():
 
 @bp.route('/votepoll')
 @bp.route('/votepoll/<int:id>', methods=['GET', 'POST'])
+@login_required
 @role_necessary(rol=['Admin', 'Full', 'Baby'])
 def VotePoll(id=None):
     if id == None:
         title = 'Pagina de votaciones'
         return render_template('GoToPoll.html', title=title)
-    print(Poll.query.get_or_404(id).to_dict(), flush=True)
-    return jsonify(Poll.query.get_or_404(id).to_dict())
+    poll=Poll.query.get_or_404(id);
+    return render_template('poll.html', poll=poll)
+    #print(Poll.query.get_or_404(id).to_dict(), flush=True)
+    #return jsonify(Poll.query.get_or_404(id).to_dict())
     #return 'Opcion para Votar'
