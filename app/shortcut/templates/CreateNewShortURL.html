@@ -2,6 +2,142 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block title %} {{title}} {% endblock %}
 {% block content %}
+<style>
+/*Special CSS Style for options Modal By Lukas*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 5px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 15px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: absolute; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  /*padding-right:250px; /**/
+  left: 0px;
+  top: 0px;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.xx {
+  margin: 50px auto;
+  width: 250px;
+  height: 250px;
+  border-top: 20px solid #3ACFD5;
+  border-bottom: 20px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 20px 100%;
+  background-image: -webkit-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -moz-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -o-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #3acfd5 0%, #3a4ed5 100%), linear-gradient(to bottom, #3acfd5 0%, #3a4ed5 100%);
+}
+/* Modal Content */
+.modal-content {
+  position: absolute;
+  float: left;
+  background-color: #404060;
+  margin: auto;
+  padding: 10px;
+  color: #000000;
+  /*border: 1px solid #888;*/
+  /*border: linear-gradient(45, rgb(0,143,104), rgb(250,224,60))*/
+  /*width: 200px;*/
+  border-top: 2px solid #ca2c92;/*#3ACFD5;*/
+  border-bottom: 2px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 2px 100%;
+  background-image: -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #808080;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
 {% block messages %}
   {% with messages = get_flashed_messages() %}
     {% if messages %}
@@ -9,7 +145,7 @@
 
         <div class="alert">
           <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
-          <strong>{{msg}}</strong> 
+          <strong>{{msg}}</strong>
         </div>
       {% endfor %}
     {% endif %}
@@ -24,5 +160,163 @@
     {{ wtf.form_field(form.expiration_date, class='form-control') }}
     <input type=submit class='btn btn-warning btn-block' value="Crear link">
   </form>
+  <div class="card-body">
+    <br>
+    <h2>Links acortados</h2>
+    <div class="table-responsive">
+      <table class="table tablesorter " id="">
+        <thead class=" text-primary">
+          <tr>
+          <th>
+            URL Acortado
+          </th>
+          <th>
+            Link
+          </th>
+          <th>
+            Fecha de Expiracion
+          </th>
+          <th></th>
+          </tr>
+        </thead>
+        <tbody id="tabla">
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+
+<div id="delete-modal" class="modal">
+  <div id="delete-content-modal" class="modal-content modal-lg">
+    <div class="modal-header">
+      <h2 class="modal-title">Eliminar link acortado</h2>
+      <button type="button" class="close" id="delete-link-modal-close" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" id="modal_inside">
+      <!--Metemos aqui todo el contenido del modal-->
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-danger" id="delete-link">Borrar link</button>
+      <button type="button" class="btn btn-secondary" id="delete-dismiss"=>Cancelar</button>
+    </div>
+  </div>
+</div>
+
 {% endblock content%}
+{% block javascripts %}
+<script>
+var table=document.getElementById("tabla");
+var request = new XMLHttpRequest();
+getData('/url/get_urls', fillUrlTable, table);
+function fillUrlTable(table, data){
+  for( link in data.url){
+    var val_1 = document.createElement("TD")
+    var a = document.createElement("a");
+    var content = document.createTextNode(data.url[link].shortcutlink)
+    a.appendChild(content);
+    a.href=data.url[link].link;
+    val_1.appendChild(a)
+    var val_2 = document.createElement("TD")
+    var content = document.createTextNode(data.url[link].link)
+    val_2.appendChild(content)
+    var val_3 = document.createElement("TD")
+    var content = document.createTextNode(data.url[link].expiration_date)
+    val_3.appendChild(content)
+    var settings = document.createElement("TD");
+    var content= document.createElement("button");
+    content.setAttribute("class", "btn btn-link btn-sm tim-icons icon-trash-simple");
+    var url = "/url/delete_url/"+data.url[link].shortcutlink;  //change to: { url_for(api_bp.get_roles_Settings_of_User) }
+    content.setAttribute("link", url);
+    content.setAttribute("shortcutlink", data.url[link].shortcutlink);
+    content.addEventListener("click", delete_url, false);
+    settings.appendChild(content)
+    var fila = document.createElement("TR")
+    fila.appendChild(val_1)
+    fila.appendChild(val_2)
+    fila.appendChild(val_3)
+    fila.appendChild(settings)
+    table.appendChild(fila)
+  }
+
+}
+function delete_url(e){
+  var modal = document.getElementById("delete-modal");
+  var modal_content=document.getElementById("delete-content-modal")
+  var bin = e.target;
+  var url=bin.getAttribute("link");
+  modal.style.display = "block";
+  modal_content.style.left="50%";
+  modal_content.style.top="50%";
+  modal_content.style.transform="translate(-50%, -50%)";
+  var modal_inside=document.getElementById("modal_inside");
+  while(modal_inside.hasChildNodes()){
+    modal_inside.removeChild(modal_inside.firstChild)
+  }
+  var paragraph1 = document.createTextNode("Estas seguro de eliminar el link acortado "+ bin.getAttribute("shortcutlink"));
+  modal_inside.appendChild(paragraph1);
+  modal_inside.style.color= "white";
+  modal.addEventListener("click", closeModal, false);
+  var deletelink=document.getElementById("delete-link")
+  deletelink.onclick = function(){
+    //url = "http://localhost:5000"+url;
+    console.log(url); //Esto falla, pero es porque no tiene el prefijo. Sorprendente,porque en otras partes si funciona.
+    deleteData(url);
+    modal.style.display="None";
+  }
+  document.getElementById("delete-dismiss").onclick=function(){
+    modal.style.display="None";
+  }
+  document.getElementById("delete-link-modal-close").onclick=function(){
+    modal.style.display="None";
+  }
+  modal.style.display = "block";
+  modal.addEventListener("click", closeModal, false);
+}
+function closeModal(event){
+  var modal = event.target;
+  if(modal.getAttribute("class")=="modal"){
+    modal.style.display = "none";
+  }
+}
+function setData(url, data){
+  request.open('PUT', url, true);
+  request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
+  request.onload = function(){
+    var data = JSON.parse(request.responseText);
+    if (request.readyState == 4 && request.status == "200"){
+      console.table(data);
+    }
+    else{
+      console.error(data);
+    }
+  }
+  var json = JSON.stringify(data);
+  console.log(json)
+  request.send(json)
+}
+function deleteData(url){
+  request.open('DELETE', url, true);
+  request.onload = function(){
+    var data = JSON.parse(request.responseText);
+    if (request.readyState == 4 && request.status == "200"){
+      console.table(data);
+    }else{
+      console.error(data);
+    }
+  }
+  request.send(null)
+}
+function getData(url, function_to_do, element){
+  request.open('GET', url, true);
+  request.onload = function(){
+    if(request.status>=200&&request.status < 400){
+      var data = JSON.parse(this.response);
+      function_to_do(element, data);
+    }
+  }
+  request.send();
+}
+</script>
+{% endblock %}

@@ -1,24 +1,26 @@
+
+# pull official base image
 FROM python:3.7-slim
 
-RUN adduser bestmadrid
+# set work directory
+WORKDIR /usr/src/app
 
-WORKDIR /home/bestmadrid
-COPY requirements.txt requirements.txt
-RUN python -m venv venv
-RUN venv/bin/pip install --upgrade pip
-RUN venv/bin/pip install wheel
-RUN venv/bin/pip install -r requirements.txt
-RUN venv/bin/pip install gunicorn pymysql
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
 
-COPY app app
-COPY migrations migrations
-COPY BOSS.py config.py boot.sh ./
-RUN chmod a+x boot.sh
+# install dependencies
+RUN apt-get update
+RUN apt-get install -y apt-utils
+RUN apt-get install -y gcc
+RUN apt-get install -y python3-dev default-libmysqlclient-dev
+RUN apt-get install -y python-mysqldb
+RUN pip install --upgrade pip
+COPY ./requirements.txt /usr/src/app/requirements.txt
+RUN pip install -r requirements.txt
 
-ENV FLASK_APP BOSS.py
+# copy project
+COPY . /usr/src/app/
 
-RUN chown -R bestmadrid:bestmadrid ./
-USER bestmadrid
 
-EXPOSE 5000
-ENTRYPOINT ["./boot.sh"]
+

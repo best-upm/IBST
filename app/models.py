@@ -229,6 +229,13 @@ class URL_Shortener(db.Model):
     expiration_date = db.Column(db.DateTime, index=True)
     def __repr__(self):
         return 'Link acortado: {}, redirige a: {} y expira el:{}'.format(self.shortcutlink, self.link, self.expiration_date)
+    def to_dict(self):
+        data={
+        'shortcutlink':self.shortcutlink,
+        'link':self.link,
+        'expiration_date':self.expiration_date
+        }
+        return data
     #def set_expiration_date(self):
         #This funtion sets a cronjob to delete the record
 

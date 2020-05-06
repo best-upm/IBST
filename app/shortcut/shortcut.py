@@ -1,4 +1,4 @@
-from flask import render_template, flash, redirect
+from flask import render_template, flash, redirect, jsonify
 from app import app, db
 from flask_login import login_required
 from app.functions import roles_required, role_necessary
@@ -32,7 +32,8 @@ def newShortCut():
         cutdownURLForm.populate_obj(CutDownURL)
         db.session.add(CutDownURL)
         db.session.commit()
-        flash ('Exito, se ha creado el link acortado  {}'.format('localhost:5000/url/'+cutdownURLForm.shortcutlink.data))  #BASE_URL+'/url/'+cutdownURLForm.shortcutlink
+        #flash ('Exito, se ha creado el link acortado  {}'.format('localhost:5000/url/'+cutdownURLForm.shortcutlink.data))  #BASE_URL+'/url/'+cutdownURLForm.shortcutlink
+        flash ('Exito, se ha creado el link acortado  {}'.format(app.config['BASE_URL']+'/url/'+cutdownURLForm.shortcutlink.data))  #BASE_URL+'/url/'+cutdownURLForm.shortcutlink
         #return 'URL Creado'
     return render_template('CreateNewShortURL.html', title=title, form=cutdownURLForm)
 
@@ -43,6 +44,28 @@ def redirectToURL(shortcutlink=None):
         return 'Baya, baya!!!'  #Deberia redirigir a alguna pagina bonica, bestmadrid.org por ejemplo
     return redirect(link_object.link, code=302)
 
+@bp.route('/get_urls', methods=['GET'])
+def getAllUrls():
+    #This has to return a list of shortened urls, with their redirect paths
+    urls = URL_Shortener.query.all()
+    data = {
+    'url': [x.to_dict() for x in urls]
+    }
+    return data
+
+@bp.route('/delete_url/<string:shortcutlink>', methods=["DELETE"])
+#@token_auth.login_required  #Deberia tener tamb en algun sitio prohibicion para eliminar
+def deleteUrl(shortcutlink=None):
+    print("Hola", flush=True)
+    try:
+        url_d = URL_Shortener.query.get_or_404(shortcutlink)
+        db.session.delete(url_d)
+        db.session.commit()
+        data={'success':'true'}
+    except:
+        data={'success':'false'}
+    finally:
+        return jsonify(data)
 def delete_expired_links():
     data=URL_Shortener.query.all()
     for link in data:
