@@ -2,8 +2,144 @@
 {% import 'bootstrap/wtf.html' as wtf %}
 {% block title %} {{ title }} {% endblock %}
 {% block content_poll %}
+<style>
+/*Special CSS Style for options Modal By Lukas*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 5px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(22px);
+  -ms-transform: translateX(22px);
+  transform: translateX(22px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 15px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+.modal {
+  display: none; /* Hidden by default */
+  position: absolute; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  /*padding-right:250px; /**/
+  left: 0px;
+  top: 0px;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+.xx {
+  margin: 50px auto;
+  width: 250px;
+  height: 250px;
+  border-top: 20px solid #3ACFD5;
+  border-bottom: 20px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 20px 100%;
+  background-image: -webkit-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -moz-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%), -o-linear-gradient(top, #3acfd5 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #3acfd5 0%, #3a4ed5 100%), linear-gradient(to bottom, #3acfd5 0%, #3a4ed5 100%);
+}
+/* Modal Content */
+.modal-content {
+  position: absolute;
+  float: left;
+  background-color: #404060;
+  margin: auto;
+  padding: 10px;
+  color: #000000;
+  /*border: 1px solid #888;*/
+  /*border: linear-gradient(45, rgb(0,143,104), rgb(250,224,60))*/
+  /*width: 200px;*/
+  border-top: 2px solid #ca2c92;/*#3ACFD5;*/
+  border-bottom: 2px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 2px 100%;
+  background-image: -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #808080;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
   <div class="container">
-    <table class="table">
+    <table class="table" id="table">
       <h1>Votaciones abiertas</h1>
       <thead class= "text-primary">
         <th>
@@ -23,12 +159,110 @@
           <td>{{x.description}}</td>
           <td>{{x.end_date}}</td>
           <td><a href="{{ url_for('poll_blueprint.VotePoll') }}/{{ x.id_poll }}" class="btn btn-success">Votar</a></td>
+          {% if current_user.check_role("Admin") %}
+          <td><button type="button" class="btn btn-link btn-sm tim-icons icon-trash-simple" poll_name="{{x.name}}" id={{ x.id_poll }} onclick="delete_Poll(this)"></td>
+          {% endif %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    <div id="modal" class="modal">
+      <div id="content-modal" class="modal-content modal-lg">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modal-title"></h2>
+          <button type="button" class="close" id="delete-link-modal-close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modal_inside">
+          <!--Metemos aqui todo el contenido del modal-->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="save-changes"></button>
+          <button type="button" class="btn btn-secondary" id="delete-dismiss"=>Cancelar</button>
+        </div>
+      </div>
+    </div>
 
 
 
   </div>
+  {% endblock content_poll %}
+  {% block javascripts %}
+  <script>
+    function delete_Poll(poll){
+      let delete_url="{{ url_for('poll_blueprint.deletePoll') }}";
+      deleteUrlId=delete_url+"/"+poll.id;
+      console.log(deleteUrlId)
+      let title=document.createTextNode("Eliminar votacion "+ poll.getAttribute("poll_name"))
+      let content=document.createTextNode("¿Realmente desea eliminar "+ poll.getAttribute("poll_name")+"?");
+      let button_Save=document.createTextNode("Eliminar")
+      let table=document.getElementById("table")
+      //args=[deleteUrlId, table.deleteRow(poll.id)]
+      showModal(title, content, button_Save, deleteData, deleteUrlId);
+
+    }
+    function showModal(title, content, button_Save, function_to_do, func_args){
+      var modal = document.getElementById("modal");
+      var modal_content=document.getElementById("content-modal")
+      modal.style.display = "block";
+      modal_content.style.left="50%";
+      modal_content.style.top="50%";
+      modal_content.style.transform="translate(-50%, -50%)";
+      let modal_title=document.getElementById("modal-title");
+      while(modal_title.hasChildNodes()){
+        modal_title.removeChild(modal_title.firstChild)
+      }
+      modal_title.appendChild(title);
+      let modal_inside=document.getElementById("modal_inside");
+      while(modal_inside.hasChildNodes()){
+        modal_inside.removeChild(modal_inside.firstChild)
+      }
+      modal_inside.appendChild(content);
+      modal_inside.style.color= "white";
+      let buttonSave=document.getElementById("save-changes")
+      if(buttonSave.hasChildNodes()){
+        buttonSave.removeChild(buttonSave.firstChild);
+      }
+      buttonSave.appendChild(button_Save);
+      buttonSave.onclick=function(){
+        function_to_do(func_args);
+        modal.style.display="None";
+      }
+      document.getElementById("delete-dismiss").onclick=function(){
+        modal.style.display="None";
+      }
+      document.getElementById("delete-link-modal-close").onclick=function(){
+        modal.style.display="None";
+      }
+      modal.style.display = "block";
+      modal.addEventListener("click", closeModal, false);
+    }
+    function deleteData(url, success_func){
+      var request = new XMLHttpRequest();
+      request.open('DELETE', url, true);
+      request.onload = function(){
+        var data = JSON.parse(request.responseText);
+        if (request.readyState == 4 && request.status == "200"){
+          console.table(data);
+          if (success_func==null){
+            alert("La operacion de eliminacion a dado: "+ data.success);
+          }else{
+            if(data.success==true){
+              success_func;
+            }
+          }
+        }else{
+          console.error(data);
+        }
+      }
+      request.send(null)
+    }
+    function closeModal(event){
+      var modal = event.target;
+      if(modal.getAttribute("class")=="modal"){
+        modal.style.display = "none";
+      }
+    }
+    </script>
   {% endblock %}

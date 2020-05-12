@@ -56,7 +56,6 @@ def getAllUrls():
 @bp.route('/delete_url/<string:shortcutlink>', methods=["DELETE"])
 #@token_auth.login_required  #Deberia tener tamb en algun sitio prohibicion para eliminar
 def deleteUrl(shortcutlink=None):
-    print("Hola", flush=True)
     try:
         url_d = URL_Shortener.query.get_or_404(shortcutlink)
         db.session.delete(url_d)

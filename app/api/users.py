@@ -1,10 +1,12 @@
 from flask import jsonify, request, url_for, g, abort
+from flask_login import login_required
 from app import db, ma
 from app.models import User, Membresia
 from app.api import bp
 from app.api.errors import bad_request
 from app.api.auth import token_auth
 
+''' #Esta seccion era experimental, eliminar si todo sigue funcionando como antes.
 class UserSchema(ma.SQLAlchemySchema):
     class Meta:
         model = User
@@ -46,12 +48,18 @@ def get_usersMa():
     membresia_schema=MembresiaSchema()
     user = User.query.get_or_404(1)
     return user_schema.dump(user)
-
+'''
 @bp.route('users/<int:id>', methods=['GET'])
+@login_required
 #@token_auth.login_required
 def get_user(id):
     #Returns info about a user
-    return jsonify(User.query.get_or_404(id).to_dict())
+    include_picture = request.args.get('include_picture', False, type=bool)
+    return jsonify(User.query.get_or_404(id).to_dict(include_picture=include_picture))
+
+'''@bp.route('users_pictures/<int:id>', methods=['GET'])
+def get_users:
+    '''
 @bp.route('/users', methods=['GET'])
 #@token_auth.login_required
 def get_users():

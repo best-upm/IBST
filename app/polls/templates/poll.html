@@ -33,11 +33,17 @@
   background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
 }
 .optionbox {
-  position: absolute;
+  float: left;
+  user-select: none;
+  margin: 2px;
+  /*position: absolute;*/
+  position: relative;
   text-align: center;
-  cursor: move;
-  width: 250px;
-  height: 100px;
+  /*cursor: move;*/
+  width: 23%;
+  height: auto;
+  /*width: 150px;*/
+  /*height: 150px;*/
   padding: 10px;
   border-radius: 5px;
   background-color: #404060;
@@ -56,16 +62,111 @@
   background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
   background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
 }
+/*.optionbox:hover{background-color: #3e8e41}*/
+/*Tapamos la caja de checkbox*/
+.optionbox input{
+  position: absolute;
+  opacity: 50;
+  cursor: pointer;
+  height: 0px;
+  width: 0px;
+}
+.optionbox:checked ~ .optionbox{
+  background-color: red;
+}
+.optionbox:active{
+  background-color: #606090;
+  box-shadow: 0 0 15px #00ffff;
+  transform: translateY(4px);
+}
+.optionbox_curtain {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity:0;
+  background-color: yellow;
+
+  border-radius: 5px;
+  background-color: #404060;
+  border-top: 5px solid #ca2c92;/*#3ACFD5;*/
+  border-bottom: 5px solid #3a4ed5;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-position: 0 0, 100% 0;
+  background-repeat: no-repeat;
+  -webkit-background-size: 20px 100%;
+  -moz-background-size: 20px 100%;
+  background-size: 5px 100%;
+  background-image: -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -webkit-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -moz-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%), -o-linear-gradient(top, #ca2c92 0%, #3a4ed5 100%);
+  background-image: linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%), linear-gradient(to bottom, #ca2c92 0%, #3a4ed5 100%);
+}
+
+
+
+.pollRow: after{
+  content: "";
+  display: table;
+  clear: both;
+
+}
+@media screen and (max-width:600px){
+  .optionbox{
+    width: 45%
+  }
+}
 
 </style>
 {% endblock %}
 {% block content_poll %}
 <div class="container">
   <br>
-  <h2>{{ poll.name }}</h2>
-  <h4>{{ poll.description }}</h4>
+  <!--<h2 id="nombre_encuesta">{{ poll.name }}</h2>-->
+  <!--<h4 id="descripcion_encuesta">{{ poll.description }}</h4>-->
+  <div class"row">
+    <div class="col-md-12">
+      <div class="card card-plain">
+        <div class="card-header">
+          <h3 class="card-title" id="poll_name"><b>Votacion:</b> {{ poll.name }}</h3>
+          <p class="category" id="poll_description">Seleciona en orden de preferencia tus votos</p>
+        </div>
+        <div class="table-responsive">
+          <div class="card-body">
+            <div class="pollRow">
+              {% for option in poll.options %}
+              <label class="optionbox" id="{{ option.id_option }}" onclick="log_press(this)">
+                {% if "user_id: " in option.option_name %}
+                {% set user = User.query.get(option.option_name.split(" ", 1)[1]) %}
 
-  <div class="container-fluid">
+                {% if(user.Imagenes.last_changed=="Twitter"): %}
+                <img src="{{ avatars.social_media(user.Imagenes.Twitter_user_picture, platform='twitter', size='medium') }}" alt="{{ user.Nombre }}">
+                {% elif user.Imagenes.last_changed == "Upload": %}
+                <img src="{{ url_for('get_avatar', filename=user.Imagenes.medium_picture) }}" alt="{{ user.Nombre }}">
+                {% elif user.Imagenes.last_changed == "URL": %}
+                <img src="{{ user.Imagenes.picture_url }}" alt="{{ user.Nombre }}">
+                {% else: %}
+                <img src="{{ avatars.default(size='m') }}" alt="{{ user.Nombre }}">
+                {% endif %}
+                <h3>{{ user.Usuario }}</h3>
+                {% elif "date: " in option.option_name %}
+
+                {% else %}
+                <h3>{{ option.option_name }}</h3>
+                {% endif %}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success" onclick="sendVotes()">Enviar Votos</button>
+      </div>
+    </div>
+  </div>
+  <!--<div class="container-fluid">
     <div class="row">
       <div class="col-sm-8">
         <h4>Organizador</h4>
@@ -79,12 +180,50 @@
         </div>
       </div>
     </div>
-  </div>
+  </div>-->
 </div>
 {% endblock %}
 {% block javascripts%}
 <script>
-//Make the DIV element draggagle:
+var request = new XMLHttpRequest();
+var poll_id= '{{ poll.id_poll }}'
+var base_url= '{{ url_for('.vote') }}'
+//var button1=document.getElementById("button1");
+//button1.addEventListener("click", log_press)
+
+var preferenceArray=[];
+var screen_shower=document.getElementById("orderpreference");
+function sendVotes(){
+  if(preferenceArray.length != {{ poll.options|length }}){
+    alert("No has seleccionado todas las opciones!!!")
+  }else{
+    var data={};
+    data.optionId_preference=preferenceArray;
+    url = base_url+"/"+poll_id;
+    console.log(poll_id)
+    console.log(url);
+    putData(url, data);
+
+  }
+}
+function log_press(button){
+  var a = preferenceArray.indexOf(button.id);
+  if (a==-1){
+    preferenceArray[preferenceArray.length]=button.id;
+    button.style.backgroundColor="#606090";
+  }
+  else{
+    preferenceArray.splice(a, 1);
+    button.style.backgroundColor="#404060";
+  }
+  /*orden=document.createTextNode(preferenceArray);
+  if(screen_shower.hasChildNodes()){
+    screen_shower.removeChild(screen_shower.firstChild)
+  }
+  screen_shower.appendChild(orden);*/
+  console.log(preferenceArray);
+}
+
 var old_x;
 var old_y;
 dragElement(document.getElementById("drag_option_1"));
@@ -135,7 +274,6 @@ function dragElement(elmnt) {
     // call a function whenever the cursor moves:
     document.onmousemove = elementDrag;
   }
-
   function elementDrag(e) {
     e = e || window.event;
     e.preventDefault();
@@ -145,15 +283,53 @@ function dragElement(elmnt) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    e.style.top = (e.offsetTop - pos2) + "px";
+    e.style.left = (e.offsetLeft - pos1) + "px";
   }
-
   function closeDragElement() {
     /* stop moving when mouse button is released:*/
     document.onmouseup = null;
     document.onmousemove = null;
   }
-
+  function putData(url, data){
+    let json = JSON.stringify(data);
+    request.open('PUT', url, true);
+    request.setRequestHeader('Content-type','application/json; charset=utf-8');
+    request.onload = function(){
+      var data=JSON.parse(request.responseText);
+      if (request.readyState == 4 && request.status == "200") {
+		      console.table(data);
+	    } else {
+		      console.error(data);
+	    }
+    }
+    request.send(json);
+  }
+  function getData(url, function_to_do, element){    //_sufix=null, page=1, items=10
+    request.open('GET', url, true);
+    request.onload = function(){
+      if(request.status>=200&&request.status < 400){
+        var data = JSON.parse(this.response);
+        function_to_do(element, data);
+        if(data._meta.total_pages>1){
+          var arr = [];
+          for(x=0; x<data._meta.total_pages; x++){
+            var button = document.createElement("button");
+            button.setAttribute("class", "btn btn-secondary");
+            var url=endpoint+'page='+(x+1)+'&per_page='+items_per_page;
+            button.setAttribute("href", url);
+            button.setAttribute("page", (x+1));
+            var val=document.createTextNode(x+1);
+            button.appendChild(val);
+            button_slot.appendChild(button);
+            button_slot.innerHTML += " ";
+          }
+          button_slot.addEventListener("click", loadNewPage);
+        }
+        return data;
+      }
+    }
+    request.send();
+  }
 </script>
 {% endblock %}

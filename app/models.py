@@ -42,6 +42,8 @@ Topic = db.Table('Topic', db.Column('id_post', db.Integer, db.ForeignKey('post.i
 #La tabla PollOptions y UserVote, tienen una relacion M:M, son multiples votos a multiples opciones
 #Creamos una tabla intermedia que las relacione. La llamare: voto_opcion, o la traduccion en ingles option_vote
 option_vote = db.Table('option_vote', db.Column('id_option', db.Integer, db.ForeignKey('poll_option.id_option')), db.Column('user', db.Integer, db.ForeignKey('user.id')))
+users_polls = db.Table('users_polls', db.Column('id_poll', db.Integer, db.ForeignKey('poll.id_poll')), db.Column('user', db.Integer, db.ForeignKey('user.id')))
+#users_polls is usefull for searching the polls that the user has filled already.
 #class User(UserMixin, db.Model):
 class User(db.Model, PaginatedAPIMixin, UserMixin):
     #__tablename__='Usuarios'
@@ -59,6 +61,8 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     #Twitter = db.Column(db.String(50))
     Imagenes = db.relationship('pictures', backref='user', uselist=False)
     Membresia = db.relationship('Membresia', secondary=Rol, backref=db.backref('Miembros', lazy='dynamic'))
+    votes = db.relationship('PollOption', secondary=option_vote, backref=db.backref('votos', lazy='dynamic'))
+    filled_polls = db.relationship('Poll', secondary=users_polls, backref=db.backref('users_polls', lazy='dynamic'))
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration=db.Column(db.DateTime)
     def get_token(self, expires_in=3600):
@@ -80,7 +84,7 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
     def check_password(self, password):
-        if self.idType == "OAUTH":
+        if self.idType == "OAUTH":  #AGUJERO!!!
             return True
         return check_password_hash(self.password_hash, password)
     def check_role(self, role):
@@ -88,14 +92,14 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
         return id_membresia in self.Miembros
     def check_neccesary_role(self, roles):
         for rol in roles:
-            id_membresia=Membresia.query.filter_by(tipo=roles).first()
+            id_membresia=Membresia.query.filter_by(tipo=rol).first()
             if id_membresia in current_user.Miembros:
                 return True
         return False
     def __repr__(self):
         return '<User {}>'.format(self.Usuario)
 
-    def to_dict(self, include_email=False, include_avaliable_roles=False):
+    def to_dict(self, include_email=False, include_avaliable_roles=False, include_picture=False):
         member=[]
         for x in self.Membresia:
             member.append(x.to_dict())
@@ -119,7 +123,13 @@ class User(db.Model, PaginatedAPIMixin, UserMixin):
             data['Membresia']= roles
         else:
             data['Membresia']=member
+        if include_picture:
+            if self.Imagenes != None:
+                data['pictures']=self.Imagenes.get_picture()
+            else:
+                data['pictures']=None
         return data
+
     def from_dict(self, data, new_user=False):
         for field in ['Usuario', 'email', 'Nombre', 'Apellidos', 'Telefono']:
             if field in data:
@@ -138,7 +148,41 @@ class pictures(db.Model):
     Twitter_user_picture = db.Column(db.String(50))
     picture_url = db.Column(db.String(300))
     last_changed = db.Column(db.String(20))
-
+    def get_picture(self, size=None):
+        data={}
+        if(size == "small"):
+            if self.last_changed == "Upload":
+                data = {'small_picture':"/avatars/"+self.small_picture}
+            elif self.last_changed == "URL":
+                data = {'URL':self.picture_url+"=s50"}
+            elif self.last_changed == "Twitter":
+                data= {'Twitter':self.Twitter_user_picture}
+        elif(size == "medium"):
+            if self.last_changed == "Upload":
+                data = {'small_picture':"/avatars/"+self.medium_picture}
+            elif self.last_changed == "URL":
+                data = {'URL':self.picture_url+"=s100"}
+            elif self.last_changed == "Twitter":
+                data= {'Twitter':self.Twitter_user_picture}
+        elif(size == "big"):
+            if self.last_changed == "Upload":
+                data = {'small_picture':"/avatars/"+self.small_picture}
+            elif self.last_changed == "URL":
+                data = {'URL':self.picture_url+"=s250"}
+            elif self.last_changed == "Twitter":
+                data= {'Twitter':self.Twitter_user_picture}
+        if self.last_changed == "Upload":
+            data = {
+            'original_picture':"/avatars/"+self.original_picture,
+            'large_picture':"/avatars/"+self.large_picture,
+            'medium_picture':"/avatars/"+self.medium_picture,
+            'small_picture':"/avatars/"+self.small_picture
+            }
+        elif self.last_changed == "URL":
+            data = {'URL':self.picture_url}
+        elif self.last_changed == "Twitter":
+            data= {'Twitter':self.Twitter_user_picture}
+        return data
 
 class Membresia(db.Model):
     #__tablename__='Roles'
@@ -210,7 +254,7 @@ class PollOption(db.Model):
     id_parent_poll = db.Column(db.Integer(), db.ForeignKey('poll.id_poll'))
     parent_poll= db.relationship("Poll", back_populates="options")
     option_name = db.Column(db.String(100))     #De cara al futuro, pensar si se puede incluir objetos como opciones en las votaciones
-    votes = db.relationship("User", secondary=option_vote, backref=db.backref('votes', lazy='dynamic'))
+    votes = db.relationship("User", secondary=option_vote, backref=db.backref('usuario', lazy='dynamic'))
     #votos = db.relationship()
     def __repr__(self):
         return '<Opcion> {}'.format(self.option_name)

@@ -26,3 +26,4 @@ class Config(object):
     GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID') or '849736360226-1k33m2144l4afnv2u16ohmr3g3c5pj7g.apps.googleusercontent.com'
     GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET') or 'd9nIBtbmLbPi3TXwrgjx2Bdf'
     GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration")
+    GOOGLE_API_KEY = os.environ.get('GOOGLE_API_KEY')

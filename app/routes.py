@@ -124,11 +124,6 @@ def crop():
 		return redirect(url_for('profile', id=current_user.id))
 	return render_template('crop.html')
 
-@app.route('/admin')
-@roles_required(rol=['Admin'])
-def admin():
-	return render_template('admin.html')
-
 @app.route('/form/escuelas/<NombreCampus>')
 def escuelas(NombreCampus):
 	with open('./app/static/json/Escuelas.json') as Escuelas:
