@@ -39,10 +39,10 @@ def newPoll():
                     analized_option=option.split(" ", 1)[1];
                 opcion = PollOption(option_name=option)
                 poll.options.append(opcion)
-                db.session.add(poll)
-                db.session.commit()
+            db.session.add(poll)
+            db.session.commit()
 		            #print(options, flush=True)
-                return render_template('ShowNewPoll.html', options=options)
+            return render_template('ShowNewPoll.html', options=options)
         except:
             flash('Error!!! Ha sucedido un error, revisa que todos los datos han sido introducidos correctamente')
             return render_template('Newpoll.html', title=title, form=form)

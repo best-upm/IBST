@@ -3,7 +3,7 @@ from app.models import *
 
 def setup_db():
 
-    user=User(Usuario="GLaDos", email=os.environ.get('SERVER_EMAIL'), name="Caroline")
+    user=User(Usuario="GLaDos", email=os.environ.get('SERVER_EMAIL'), Nombre="Caroline")
     user.set_password("noviembre")
     admin=Membresia(tipo="Admin")
     baby=Membresia(tipo="Baby")
