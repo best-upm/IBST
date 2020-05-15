@@ -190,7 +190,7 @@ def loginGoogle():
 	request_uri = client.prepare_request_uri(
         authorization_endpoint,
         #redirect_uri=request.base_url + "/callback",
-        redirect_uri=os.environ.get('BASE_URL')+"/callback"
+        redirect_uri=app.config['BASE_URL']+"/callback"
         scope=["openid", "email", "profile"],
     )
 	return redirect(request_uri)
