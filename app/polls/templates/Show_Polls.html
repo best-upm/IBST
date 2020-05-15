@@ -158,10 +158,37 @@ input:checked + .slider:before {
           <td>{{x.name}}</td>
           <td>{{x.description}}</td>
           <td>{{x.end_date}}</td>
-          <td><a href="{{ url_for('poll_blueprint.VotePoll') }}/{{ x.id_poll }}" class="btn btn-success">Votar</a></td>
+          <td><a href="{{ url_for('poll_blueprint.VotePoll', id=x.id_poll ) }}" class="btn btn-success">Votar</a></td>
           {% if current_user.check_role("Admin") %}
-          <td><button type="button" class="btn btn-link btn-sm tim-icons icon-trash-simple" poll_name="{{x.name}}" id={{ x.id_poll }} onclick="delete_Poll(this)"></td>
+          <td><button type="button" class="btn btn-link btn-sm tim-icons icon-trash-simple text-danger" poll_name="{{x.name}}" id={{ x.id_poll }} onclick="delete_Poll(this)"></td>
           {% endif %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <li class="dropdown-divider"></li>
+    <br>
+    <table class="table" id="table">
+      <h1>Resultados Votaciones cerradas</h1>
+      <thead class= "text-primary">
+        <th>
+          Titulo
+        </th>
+        <th>
+          Descripcion
+        </th>
+        <th>
+          Fecha de Finalizacion
+        </th>
+      </thead>
+      <tbody>
+        {% for x in data_ClosedPolls %}
+        <tr>
+          <td>{{x.name}}</td>
+          <td>{{x.description}}</td>
+          <td>{{x.end_date}}</td>
+          <td><a href="{{ url_for('poll_blueprint.showPollResults', id=x.id_poll) }}" class="btn btn-success">Ver Resultados</a></td>
         </tr>
         {% endfor %}
       </tbody>

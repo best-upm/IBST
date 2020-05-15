@@ -22,7 +22,15 @@
           {{ wtf.form_field(form.start_date, class='form-control') }}
         </div>
         <div class='col'>
+          {{ wtf.form_field(form.start_time, class='form-control') }}
+        </div>
+      </div>
+      <div class='row'>
+        <div class='col'>
           {{ wtf.form_field(form.end_date, class='form-control') }}
+        </div>
+        <div class='col'>
+          {{ wtf.form_field(form.end_time, class='form-control') }}
         </div>
       </div>
       {{ wtf.form_field(form.Opciones, class='form-control', placeholder='Opciones de la votación (Separada con ; Espacio)') }}

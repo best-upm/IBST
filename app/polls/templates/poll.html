@@ -129,6 +129,15 @@
   <!--<h4 id="descripcion_encuesta">{{ poll.description }}</h4>-->
   <div class"row">
     <div class="col-md-12">
+      {% if poll.start_date > datetime.datetime.utcnow() %}
+      <h2>Marty!!! You are ahead of time!</h2>
+      <h4>Todavia no ha abierto la votacion</h4>
+      <img src="/static/imagenes/undraw_in_no_time_6igu.svg">
+      {% elif poll.end_date < datetime.datetime.utcnow() %}
+      <h2>There is nothing to see in here. Please disperse</h2>
+      <h4>Entra antes la proxima vez</h4>
+      <img src="/static/imagenes/undraw_time_management_30iu.svg">
+      {% elif poll not in current_user.filled_polls %}
       <div class="card card-plain">
         <div class="card-header">
           <h3 class="card-title" id="poll_name"><b>Votacion:</b> {{ poll.name }}</h3>
@@ -164,6 +173,12 @@
         </div>
         <button type="button" class="btn btn-success" onclick="sendVotes()">Enviar Votos</button>
       </div>
+      {% else %}
+      <h2>¡¡Ya has contestado esta votación!!</h2>
+      <h4>No necesitas hacer nada mas</h4>
+      <img src="/static/imagenes/undraw_team_goals_hrii.svg">
+
+      {% endif %}
     </div>
   </div>
   <!--<div class="container-fluid">
@@ -299,6 +314,13 @@ function dragElement(elmnt) {
       var data=JSON.parse(request.responseText);
       if (request.readyState == 4 && request.status == "200") {
 		      console.table(data);
+          if(data.success == true){
+            alert("Exito!")
+            window.location.replace("{{ url_for('poll_blueprint.Polls') }}")
+          }
+          else{
+            alert("Ha ocurrido un error. El servidor dice: " + data.reason)
+          }
 	    } else {
 		      console.error(data);
 	    }

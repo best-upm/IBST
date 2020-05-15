@@ -16,7 +16,7 @@ def get_google_provider_cfg():
 @login_required
 def  home():
 	return render_template("home.html")
-
+"""
 @app.route("/votaciones/newpoll", methods=['GET', 'POST'])
 @login_required
 @role_necessary(rol=['Admin', 'Full', 'Baby'])
@@ -39,7 +39,7 @@ def newPoll():
 @login_required
 def  votaciones():
 	return render_template("votaciones.html")
-
+"""
 @app.route('/home/newpost', methods=['GET', 'POST'])
 @login_required
 @role_necessary(rol=['Admin', 'Full', 'Baby'])

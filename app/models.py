@@ -231,6 +231,8 @@ class Poll(PaginatedAPIMixin, db.Model):
     start_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     end_date = db.Column(db.DateTime)
     options = db.relationship("PollOption", back_populates="parent_poll")
+    id_creator = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    voters = db.relationship('User', secondary=users_polls, backref=db.backref('users_polls', lazy='dynamic'))
     def __repr__(self):
         return '<Votacion {}'.format(self.name)
     def to_dict(self):
