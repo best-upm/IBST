@@ -12,14 +12,19 @@
       <label for="uname"><b>Nombre de Usuario</b></label>
       {{ form.Usuario }}
       <label for="psw"><b>Clave</b></label>
+      <p style="color: red"> {{ form.errors.Clave }}</p>
       {{ form.Clave }}
       <label for="psw"><b>Repite Clave</b></label>
+      <p style="color: red"> {{ form.errors.RClave }}</p>
       {{ form.RClave }}
       <label for="text"><b>Email</b></label>
+      <p style="color: red"> {{ form.errors.Email}}</p>
       {{ form.Email }}
       <label for="text"><b>Nombre</b></label>
+      <p style="color: red"> {{ form.errors.Nombre }}</p>
       {{ form.Nombre }}
       <label for="text"><b>Apellidos</b></label>
+      <p style="color: red"> {{ form.errors.Apellidos }}</p>
       {{ form.Apellidos }}
       <button type="submit">Registro</button>
       <div style="display: flex; flex-direction: row; justify-content: space-between">

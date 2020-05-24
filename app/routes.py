@@ -16,30 +16,7 @@ def get_google_provider_cfg():
 @login_required
 def  home():
 	return render_template("home.html")
-"""
-@app.route("/votaciones/newpoll", methods=['GET', 'POST'])
-@login_required
-@role_necessary(rol=['Admin', 'Full', 'Baby'])
-def newPoll():
-	form = NewPollForm()	#Titulo, Descripcion, Opciones,
-	title = 'Crear nueva votacion'
-	if(form.validate_on_submit()):
-		poll = Poll(name=form.Titulo.data, description=form.Descripcion.data, end_date=form.end_date.data)
-		options = list(form.Opciones.data.split("; "))
-		for option in options:
-			opcion = PollOption(option_name=option)
-			poll.options.append(opcion)
-		db.session.add(poll)
-		db.session.commit()
-		#print(options, flush=True)
-		return render_template('ShowNewPoll.html', options=options)
-	return render_template('Newpost.html', title=title, form=form)
 
-@app.route("/votaciones")
-@login_required
-def  votaciones():
-	return render_template("votaciones.html")
-"""
 @app.route('/home/newpost', methods=['GET', 'POST'])
 @login_required
 @role_necessary(rol=['Admin', 'Full', 'Baby'])
@@ -138,46 +115,48 @@ def escuelas(NombreCampus):
 #def user_data(user_id):
 @app.route("/login-google/callback")
 def callback():
-	code = request.args.get("code") # Get authorization code Google sent back to you
-	google_provider_cfg = get_google_provider_cfg() # Find out what URL to hit to get tokens that allow you to ask for things on behalf of a user
-	token_endpoint = google_provider_cfg["token_endpoint"]
+    code = request.args.get("code") # Get authorization code Google sent back to you
+    google_provider_cfg = get_google_provider_cfg() # Find out what URL to hit to get tokens that allow you to ask for things on behalf of a user
+    token_endpoint = google_provider_cfg["token_endpoint"]
 	# Prepare and send a request to get tokens! Yay tokens!
-	token_url, headers, body = client.prepare_token_request(token_endpoint, authorization_response=request.url, redirect_url=request.base_url, code=code)
-	token_response = requests.post(token_url, headers=headers, data=body, auth=(app.config['GOOGLE_CLIENT_ID'], app.config['GOOGLE_CLIENT_SECRET']))
-	client.parse_request_body_response(json.dumps(token_response.json())) # Parse the tokens!
-	# Now that you have tokens (yay) let's find and hit the URL
-	# from Google that gives you the user's profile information,
-	# including their Google profile image and email
-	userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
-	uri, headers, body = client.add_token(userinfo_endpoint)
-	userinfo_response = requests.get(uri, headers=headers, data=body)
-	# You want to make sure their email is verified.
-	# The user authenticated with Google, authorized your
-	# app, and now you've verified their email through Google!
-	if userinfo_response.json().get("email_verified"):
-		unique_id = userinfo_response.json()["sub"]
-		users_email = userinfo_response.json()["email"]
-		picture = userinfo_response.json()["picture"]
-		users_name = userinfo_response.json()["given_name"]
-		family_name = userinfo_response.json()["family_name"]
-	else:
-	    return "User email not available or not verified by Google.", 400
-	#return ("<p>Hello, {}! You're logged in! Email: {}</p>""<div><p>Google Profile Picture:</p>"'<img src="{}" alt="Google profile pic"></img></div>''<a class="button" href="/logout">Logout</a>'.format(users_name, users_email, picture))
+    token_url, headers, body = client.prepare_token_request(token_endpoint, authorization_response="https:"+request.url.split(":", 1)[1], redirect_url=app.config['BASE_URL']+"/login-google/callback", code=code)
+    token_response = requests.post(token_url, headers=headers, data=body, auth=(app.config['GOOGLE_CLIENT_ID'], app.config['GOOGLE_CLIENT_SECRET']))
+    client.parse_request_body_response(json.dumps(token_response.json())) # Parse the tokens!
+    # Now that you have tokens (yay) let's find and hit the URL
+    # from Google that gives you the user's profile information,
+    # including their Google profile image and email
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+    # You want to make sure their email is verified.
+    # The user authenticated with Google, authorized your
+    # app, and now you've verified their email through Google!
+    if userinfo_response.json().get("email_verified"):
+        unique_id = userinfo_response.json()["sub"]
+        users_email = userinfo_response.json()["email"]
+        picture = userinfo_response.json()["picture"]
+        users_name = userinfo_response.json()["given_name"]
+        family_name = userinfo_response.json()["family_name"]
 
-	user = User.query.filter_by(email = users_email).first()
-	if user is None:
-		user =User(idType="OAUTH",Usuario=users_name+family_name, email=users_email, Nombre=users_name, Apellidos=family_name)
-		Imagenes=pictures()
-		user.Imagenes = Imagenes
-		Imagenes.picture_url=picture
-		Imagenes.last_changed="URL"
-		db.session.add(user)
-		db.session.commit()
-	elif user.password_hash:
-		flash('Ya existe una cuenta de usuario con ese correo')
-		return redirect(url_for('login'))
-	login_user(user)
-	return redirect(url_for('home'))
+    else:
+        return "User email not available or not verified by Google.", 400
+        #return ("<p>Hello, {}! You're logged in! Email: {}</p>""<div><p>Google Profile Picture:</p>"'<img src="{}" alt="Google profile pic"></img></div>''<a class="button" href="/logout">Logout</a>'.format(users_name, users_email, picture))
+
+    user = User.query.filter_by(email = users_email).first()
+    if user is None:
+        user =User(idType="OAUTH",Usuario=users_name+family_name, email=users_email, Nombre=users_name, Apellidos=family_name)
+        Imagenes=pictures()
+        user.Imagenes = Imagenes
+        Imagenes.picture_url=picture
+        Imagenes.last_changed="URL"
+        db.session.add(user)
+        db.session.commit()
+    elif user.idType != "OAUTH":
+
+        flash('Ya existe una cuenta de usuario con ese correo')
+        return redirect(url_for('login'))
+    login_user(user)
+    return redirect(url_for('home'))
 
 @app.route("/login-google")
 def loginGoogle():
@@ -190,7 +169,7 @@ def loginGoogle():
 	request_uri = client.prepare_request_uri(
         authorization_endpoint,
         #redirect_uri=request.base_url + "/callback",
-        redirect_uri=app.config['BASE_URL']+"/callback",
+        redirect_uri=app.config['BASE_URL']+"/login-google/callback",
         scope=["openid", "email", "profile"],
     )
 	return redirect(request_uri)
@@ -204,7 +183,7 @@ def login():
 	#print(form.errors)
 	if(form.validate_on_submit()):
 		user = User.query.filter_by(Usuario=form.Usuario.data).first()
-		if user is None or not user.check_password(form.Clave.data):
+		if user is None or not user.check_password(form.Clave.data) or user.idType=="OAUTH":
 			flash('Usuario o Clave invalida')
 			#return redirect(url_for('login'))
 			return render_template('/Login-Register-Page/login.html', form=form)

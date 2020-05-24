@@ -1,10 +1,10 @@
 from flask import render_template
 from app.errors import bp
+from app import db
 
 
 @bp.app_errorhandler(404)
 def not_found_error(error):
-    print('Hola esto funciona', flush=True)
     return render_template('404.html'), 404
 
 @bp.app_errorhandler(500)

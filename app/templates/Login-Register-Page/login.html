@@ -9,8 +9,11 @@
     <div class="container">
       {{ form.hidden_tag() }}
       <label for="uname"><b>Username</b></label>
+      {{ form.errors.Usuario }}
       {{ form.Usuario }}
+
       <label for="psw"><b>Password</b></label>
+      <p style="color: red"> {{ form.errors.Clave }}</p>
       {{ form.Clave }}
       <button type="submit">Login</button>
       <div style="display: flex; flex-direction: row; justify-content: space-between">
