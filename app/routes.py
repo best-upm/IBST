@@ -144,19 +144,22 @@ def callback():
 
     user = User.query.filter_by(email = users_email).first()
     if user is None:
-        user =User(idType="OAUTH",Usuario=users_name+family_name, email=users_email, Nombre=users_name, Apellidos=family_name)
+        user =User(OAUTH=True, Usuario=users_name+family_name, email=users_email, Nombre=users_name, Apellidos=family_name)
+        user.set_password(unique_id)
         Imagenes=pictures()
         user.Imagenes = Imagenes
         Imagenes.picture_url=picture
         Imagenes.last_changed="URL"
         db.session.add(user)
         db.session.commit()
-    elif user.idType != "OAUTH":
-
+    elif not user.OAUTH:
         flash('Ya existe una cuenta de usuario con ese correo')
         return redirect(url_for('login'))
-    login_user(user)
+    elif(user.check_password(unique_id)):
+        login_user(user)
     return redirect(url_for('home'))
+
+
 
 @app.route("/login-google")
 def loginGoogle():
@@ -183,7 +186,7 @@ def login():
 	#print(form.errors)
 	if(form.validate_on_submit()):
 		user = User.query.filter_by(Usuario=form.Usuario.data).first()
-		if user is None or not user.check_password(form.Clave.data) or user.idType=="OAUTH":
+		if user is None or not user.check_password(form.Clave.data) or user.OAUTH:
 			flash('Usuario o Clave invalida')
 			#return redirect(url_for('login'))
 			return render_template('/Login-Register-Page/login.html', form=form)

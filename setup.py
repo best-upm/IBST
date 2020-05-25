@@ -2,8 +2,8 @@ from app import db, app, migrate
 from app.models import *
 
 def setup_db():
-
-    user=User(Usuario="GLaDos", email=os.environ.get('SERVER_EMAIL'), Nombre="Caroline")
+    db.create_all()
+    user=User(id="1", Usuario="GLaDos", email=os.environ.get('SERVER_EMAIL'), Nombre="Caroline")
     user.set_password("noviembre")
     admin=Membresia(tipo="Admin")
     baby=Membresia(tipo="Baby")
@@ -18,5 +18,6 @@ def setup_db():
     db.session.add(baby)
     db.session.add(full)
     db.session.add(user)
+    db.session.commit()
 
 setup_db()

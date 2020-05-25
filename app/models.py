@@ -47,8 +47,9 @@ users_polls = db.Table('users_polls', db.Column('id_poll', db.Integer, db.Foreig
 #class User(UserMixin, db.Model):
 class User(db.Model, PaginatedAPIMixin, UserMixin):
     #__tablename__='Usuarios'
-    id = db.Column(db.BigInteger, primary_key=True)
-    idType = db.Column(db.String(5)) #Esto esta por la implementacion de Google Auth. Hay un tipo de cuentas que no tiene clave
+    id = db.Column(db.Integer, primary_key=True)
+    #idType = db.Column(db.String(5)) #Esto esta por la implementacion de Google Auth. Hay un tipo de cuentas que no tiene clave
+    OAUTH = db.Column(db.Boolean, default=False)
     Usuario = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
