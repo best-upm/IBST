@@ -6,7 +6,7 @@ cffi==1.13.2
 chardet==3.0.4
 Click==7.0
 croniter==0.3.31
-cryptography==2.8
+cryptography==3.2
 dominate==2.4.0
 Flask==1.1.1
 Flask-Avatars==0.2.2
