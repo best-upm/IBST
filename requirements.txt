@@ -35,7 +35,7 @@ marshmallow==3.5.1
 marshmallow-sqlalchemy==0.22.3
 oauthlib==3.1.0
 passlib==1.7.2
-Pillow==7.0.0
+Pillow==8.2.0
 pycparser==2.19
 Pygments==2.5.2
 pyOpenSSL==19.1.0
