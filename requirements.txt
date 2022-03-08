@@ -23,7 +23,7 @@ Flask-Security==3.0.0
 Flask-SQLAlchemy==2.4.1
 Flask-User==1.0.2.2
 Flask-WTF==0.14.2
-httpie==2.0.0
+httpie==3.1.0
 idna==2.8
 imgur-uploader==0.3.0
 imgurpython==1.1.7
