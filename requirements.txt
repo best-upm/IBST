@@ -29,7 +29,7 @@ imgur-uploader==0.3.0
 imgurpython==1.1.7
 itsdangerous==1.1.0
 Jinja2==2.10.3
-Mako==1.1.1
+Mako==1.2.2
 MarkupSafe==1.1.1
 marshmallow==3.5.1
 marshmallow-sqlalchemy==0.22.3
